@@ -21,7 +21,7 @@ namespace
 		return _api->call_handler<const char*, char**>(_comm, _input, _output);
 	} // call_replica_truncate
 
-	auto rs_replica_truncate(RsComm* _comm, const char* _input, char** _output) -> int
+	auto rs_replica_truncate([[maybe_unused]] RsComm* _comm, const char* _input, char** _output) -> int
 	{
 		if (!_input || !_output) {
 			log_api::error("{}: Received nullptr for input and/or output pointer.");
