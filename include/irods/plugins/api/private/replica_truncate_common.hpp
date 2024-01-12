@@ -1,5 +1,5 @@
-#ifndef IRODS_PROJECT_TEMPLATE_PRIVATE_COMMON_HPP
-#define IRODS_PROJECT_TEMPLATE_PRIVATE_COMMON_HPP
+#ifndef IRODS_REPLICA_TRUNCATE_PRIVATE_COMMON_HPP
+#define IRODS_REPLICA_TRUNCATE_PRIVATE_COMMON_HPP
 
 // This file is for the implementation of the plugin. Symbols declared and/or defined in
 // this header MUST NOT be used outside of the plugin.
@@ -19,4 +19,4 @@ using operation_type = std::function<int(RsComm*, const char*, char**)>;
 extern const operation_type op;
 extern funcPtr fn_ptr;
 
-#endif // IRODS_PROJECT_TEMPLATE_PRIVATE_COMMON_HPP
+#endif // IRODS_REPLICA_TRUNCATE_PRIVATE_COMMON_HPP

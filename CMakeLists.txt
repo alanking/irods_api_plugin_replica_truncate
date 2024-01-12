@@ -17,7 +17,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_MODULE_LINKER_FLAGS_INIT "-rdynamic -Wl,--export-dynamic -Wl,--enable-new-dtags -Wl,--as-needed -Wl,-z,defs")
 set(CMAKE_MODULE_LINKER_FLAGS_RELEASE_INIT "-Wl,--gc-sections -Wl,-z,combreloc")
 
-project(irods_project_template_cpp_api_plugin
+project(irods_replica_truncate_cpp_api_plugin
   VERSION "${IRODS_PLUGIN_VERSION}"
   LANGUAGES CXX)
 
@@ -44,13 +44,13 @@ endif()
 
 add_compile_options(-Wall -Wextra -Wconversion -Wshadow -Wpedantic)
 
-set(IRODS_BUILD_WITH_WERROR OFF CACHE BOOL "Choose whether to compile with -Werror.")
+set(IRODS_BUILD_WITH_WERROR ON CACHE BOOL "Choose whether to compile with -Werror.")
 
 if (IRODS_BUILD_WITH_WERROR)
   add_compile_options(-Werror)
 endif()
 
-set(IRODS_MODULE_NAME_PREFIX "irods_cpp_project_template_api_plugin")
+set(IRODS_MODULE_NAME_PREFIX "irods_api_plugin_replica_truncate")
 
 foreach (IRODS_MODULE_VARIANT IN ITEMS client server)
   set(IRODS_MODULE_NAME ${IRODS_MODULE_NAME_PREFIX}_${IRODS_MODULE_VARIANT})
@@ -99,64 +99,30 @@ target_compile_definitions(
 
 install(
   FILES
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/irods/plugins/api/project_template_common.h"
-  #"${CMAKE_CURRENT_SOURCE_DIR}/include/irods/plugins/api/rc_project_template.h"
-  #"${CMAKE_CURRENT_SOURCE_DIR}/include/irods/plugins/api/rs_project_template.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/irods/plugins/api/replica_truncate_common.h"
+  #"${CMAKE_CURRENT_SOURCE_DIR}/include/irods/plugins/api/rc_replica_truncate.h"
+  #"${CMAKE_CURRENT_SOURCE_DIR}/include/irods/plugins/api/rs_replica_truncate.hpp"
   DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/irods/plugins/api")
-
-# TODO Figure out how to ship the convenience headers/implementations for invoking the API plugin.
-# We don't have anything in place for clients to automatically load convenience logic. Maybe we
-# just provide examples for how to invoke the plugins from a client and a server.
-#set(IRODS_PLUGIN_INVOCATION_FUNCTIONS irods_project_template_invocation_functions)
-#
-#add_library(
-#  ${IRODS_PLUGIN_INVOCATION_FUNCTIONS}
-#  SHARED
-#  "${CMAKE_CURRENT_SOURCE_DIR}/src/rc_project_template.cpp"
-#  "${CMAKE_CURRENT_SOURCE_DIR}/src/rs_project_template.cpp")
-#
-#target_include_directories(
-#  ${IRODS_MODULE_NAME}
-#  PRIVATE
-#  ${IRODS_INCLUDE_DIRS}
-#  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-#  #"${IRODS_EXTERNALS_FULLPATH_BOOST}/include"
-#  #"${IRODS_EXTERNALS_FULLPATH_FMT}/include"
-#  #"${IRODS_EXTERNALS_FULLPATH_NANODBC}/include"
-#  #"${IRODS_EXTERNALS_FULLPATH_SPDLOG}/include")
-#  )
-#
-#target_link_libraries(
-#  ${IRODS_PLUGIN_INVOCATION_FUNCTIONS}
-#  PRIVATE
-#  irods_server)
 
 include(IrodsCPackCommon)
 include(IrodsCPackPlatform)
 
-# TODO Use the same naming convention for all project templates.
-set(IRODS_PLUGIN_PACKAGE_NAME irods-api-plugin-project-template)
+set(IRODS_PLUGIN_PACKAGE_NAME irods-api-plugin-replica-truncate)
 
 set(CPACK_PACKAGE_VERSION ${IRODS_PLUGIN_VERSION})
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
 set(CPACK_COMPONENT_INCLUDE_TOPLEVEL_DIRECTORY OFF)
 set(CPACK_COMPONENTS_GROUPING IGNORE)
-#set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The integrated Rule-Oriented Data System") # Defined by IrodsCPackCommon
 
 set(CPACK_DEB_COMPONENT_INSTALL OFF)
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS OFF)
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION ON)
-#set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/packaging/postinst;")
-#set(CPACK_DEBIAN_PACKAGE_BREAKS ${IRODS_PLUGIN_PACKAGE_NAME})
-#set(CPACK_DEBIAN_PACKAGE_REPLACES ${IRODS_PLUGIN_PACKAGE_NAME})
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 
 set(CPACK_RPM_COMPONENT_INSTALL OFF)
 set(CPACK_RPM_PACKAGE_LICENSE "BSD-3-Clause")
 set(CPACK_RPM_PACKAGE_AUTOREQ 0)
 set(CPACK_RPM_PACKAGE_AUTOPROV 0)
-#set(CPACK_RPM_PACKAGE_OBSOLETES ${IRODS_PLUGIN_PACKAGE_NAME})
-#set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/packaging/postinst")
 set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
 
 set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
