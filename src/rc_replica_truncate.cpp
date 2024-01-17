@@ -12,9 +12,9 @@ auto rc_replica_truncate(RcComm* _comm, const char* _input, char** _output) -> i
 	}
 
 	return procApiRequest(_comm,
-						  APN_REPLICA_TRUNCATE,
-						  const_cast<char*>(_input), // NOLINT(cppcoreguidelines-pro-type-const-cast)
-						  nullptr,
-						  reinterpret_cast<void**>(_output), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-						  nullptr);
+	                      APN_REPLICA_TRUNCATE,
+	                      const_cast<char*>(_input), // NOLINT(cppcoreguidelines-pro-type-const-cast)
+	                      nullptr,
+	                      reinterpret_cast<void**>(_output), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+	                      nullptr);
 } // rc_replica_truncate
