@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12.0 FATAL_ERROR)
 
-find_package(IRODS REQUIRED)
+find_package(IRODS REQUIRED CONFIG)
 
 set(IRODS_PLUGIN_REVISION "0")
 set(IRODS_PLUGIN_VERSION "${IRODS_VERSION}.${IRODS_PLUGIN_REVISION}")
@@ -51,6 +51,10 @@ if (IRODS_BUILD_WITH_WERROR)
 endif()
 
 set(IRODS_MODULE_NAME_PREFIX "irods_api_plugin_replica_truncate")
+
+add_subdirectory(unit_tests)
+
+#set(IRODS_PACKAGE_NAME irods-api-plugin-replica-truncate)
 
 foreach (IRODS_MODULE_VARIANT IN ITEMS client server)
   set(IRODS_MODULE_NAME ${IRODS_MODULE_NAME_PREFIX}_${IRODS_MODULE_VARIANT})
