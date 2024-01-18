@@ -21,7 +21,8 @@ struct RcComm;
 /// 	    "path": "<string>",
 /// 	    "length": <integer>,
 /// 	    "target_resource": "<string>",
-/// 	    "replica_number": <integer>
+/// 	    "replica_number": <integer>,
+///			"admin_mode": <bool>
 /// 	}
 /// 	\endcode
 ///
@@ -36,21 +37,23 @@ struct RcComm;
 /// 	 "replica_number" - The replica number of the replica which is being truncated. The replica
 /// 		 number must be in the range [0,2147483648). This input is optional. An error will occur
 /// 		 if this option is used with the target_resource option.
+/// 	 "admin_mode" - A boolean value which indicates that the user wishes to truncate the replica
+///			 even if the user does not have permissions on the object. This input is optional. The
+///			 default value is false. An error will occur if used by unprivileged uesrs.
 /// \endparblock
 /// \param[out] _output \parblock JSON structure describing outputs from the operation. Should take the following form:
 /// 	\code{.js}
 /// 	{
-/// 	    "error_code": <integer>,
 /// 	    "message": "<string>"
 /// 	}
 /// 	\endcode
 ///
-/// 	"error_code" - The iRODS error code returned from the operation. If set, the errno will be in the last 3 digits.
 /// 	"message" - A descriptive error or informational message from the operation. Usually empty on success.
 /// \endparblock
 ///
+/// \return iRODS error code.
 /// \retval 0 on success
-/// \retval -1 on failure
+/// \retval <0 on failure
 extern "C" int rc_replica_truncate(struct RcComm* _comm, const char* _input, char** _output);
 
 #endif // IRODS_RC_REPLICA_TRUNCATE_H
