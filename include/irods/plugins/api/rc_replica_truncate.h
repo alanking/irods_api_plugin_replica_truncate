@@ -2,6 +2,8 @@
 #define IRODS_RC_REPLICA_TRUNCATE_H
 
 struct RcComm;
+struct DataObjInp;
+struct BytesBuf;
 
 /// \brief Truncate a replica at the specified logical path to the specified length.
 ///
@@ -15,29 +17,20 @@ struct RcComm;
 ///  mod_data_obj_meta
 ///
 /// \param[in] _comm iRODS client connection object
-/// \param[in] _input \parblock JSON structure describing inputs to the operation. Should take the following form:
-/// 	\code{.js}
-/// 	{
-/// 	    "path": "<string>",
-/// 	    "length": <integer>,
-/// 	    "target_resource": "<string>",
-/// 	    "replica_number": <integer>,
-///			"admin_mode": <bool>
-/// 	}
-/// 	\endcode
-///
-/// 	 "path" - The logical path of the replica to truncate.
-/// 	 "length" - The length to which the replica should be truncated. Behaves like truncate(2).
+/// \param[in] _input \parblock Data object input structure. The following pieces should be included:
+///		objPath - The logical path of the object.
+///		dataSize - The length to which the replica should be truncated. Behaves like truncate(2).
 /// 		 If the file previously was larger than this size, the extra data is lost.
 /// 		 If the file previously was shorter, it is extended, and the extended part
-/// 		 reads as null bytes ('\0'). The value must be in the range [0,2147483648).
-/// 	 "target_resource" - The root of the resource hierarchy hosting the target replica. A
+/// 		 reads as null bytes ('\0'). The value must be in the range [0,2^63).
+///		condInput - The following keywords will affect behavior:
+/// 		- "rescName" - The root of the resource hierarchy hosting the target replica. A
 /// 		 resource hierarchy resolution occurs using a "write" operation. This input is optional.
-/// 		 An error will occur if this option is used with the replica_number option.
-/// 	 "replica_number" - The replica number of the replica which is being truncated. The replica
-/// 		 number must be in the range [0,2147483648). This input is optional. An error will occur
-/// 		 if this option is used with the target_resource option.
-/// 	 "admin_mode" - A boolean value which indicates that the user wishes to truncate the replica
+/// 		 An error will occur if this option is used with "replNum" option.
+///			- "replNum" - The replica number of the replica which is being truncated. The replica
+/// 		 number must be in the range [0,2^63). This input is optional. An error will occur
+/// 		 if this option is used with the "rescName" option.
+///			- "irodsAdmin" - If present, indicates that the user wishes to truncate the replica
 ///			 even if the user does not have permissions on the object. This input is optional. The
 ///			 default value is false. An error will occur if used by unprivileged uesrs.
 /// \endparblock
@@ -54,6 +47,6 @@ struct RcComm;
 /// \return iRODS error code.
 /// \retval 0 on success
 /// \retval <0 on failure
-extern "C" int rc_replica_truncate(struct RcComm* _comm, const char* _input, char** _output);
+extern "C" int rc_replica_truncate(struct RcComm* _comm, const DataObjInp* _input, BytesBuf** _output);
 
 #endif // IRODS_RC_REPLICA_TRUNCATE_H

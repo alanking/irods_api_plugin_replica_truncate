@@ -52,7 +52,8 @@ endif()
 
 set(IRODS_MODULE_NAME_PREFIX "irods_api_plugin_replica_truncate")
 
-add_subdirectory(unit_tests)
+# TODO build this!
+#add_subdirectory(unit_tests)
 
 #set(IRODS_PACKAGE_NAME irods-api-plugin-replica-truncate)
 

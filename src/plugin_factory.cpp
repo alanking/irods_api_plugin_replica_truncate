@@ -20,25 +20,25 @@ extern "C" auto plugin_factory(
 		const_cast<char*>(RODS_API_VERSION),
 		NO_USER_AUTH,
 		NO_USER_AUTH,
-		"STR_PI",
+        "DataObjInp_PI",
 		0,
-		"STR_PI",
+        "BinBytesBuf_PI",
 		0,
 		op,
 		"api_replica_truncate",
-		irods::clearInStruct_noop,
-		irods::clearOutStruct_noop,
+        clearDataObjInp,
+        clearBytesBuffer,
 		fn_ptr
 	};
 	// clang-format on
 
 	auto* api = new irods::api_entry{def}; // NOLINT(cppcoreguidelines-owning-memory)
 
-	api->in_pack_key = "STR_PI";
-	api->in_pack_value = STR_PI;
+	api->in_pack_key = "DataObjInp_PI";
+	api->in_pack_value = DataObjInp_PI;
 
-	api->out_pack_key = "STR_PI";
-	api->out_pack_value = STR_PI;
+	api->out_pack_key = "BinBytesBuf_PI";
+	api->out_pack_value = BinBytesBuf_PI;
 
 	return api;
 } // plugin_factory
