@@ -43,6 +43,8 @@ namespace
 	{
 		const auto json_str = nlohmann::json{{"message", _message.data()}}.dump();
 
+		log_api::info("json: [{}]", json_str);
+
 		auto* output = static_cast<BytesBuf*>(std::malloc(sizeof(BytesBuf)));
 		output->buf = strdup(json_str.c_str());
 		output->len = static_cast<int>(std::strlen(json_str.c_str()) + 1);
@@ -151,9 +153,9 @@ namespace
 				irods::file_object_factory(_comm, const_cast<DataObjInp*>(_input), file_obj, &data_obj_info);
 			if (!fac_err.ok() || !data_obj_info) {
 				*_output = make_output_struct(
-					fmt::format("Cannot truncate object [{}]: Error occurred getting data object info: [{}]",
-				                _input->objPath,
-				                fac_err.result()));
+					fmt::format("Cannot truncate object [{}]: Error occurred getting data object info.",
+				                _input->objPath));
+				                //fac_err.result()));
 				return static_cast<int>(fac_err.code());
 			}
 
@@ -210,7 +212,7 @@ namespace
 
 			// The old truncate API skipped updating the catalog when the object is in a special collection, and so
 			// shall we. In fact, we should not touch the object at all in this case because it is unclear what to do.
-			if (nullptr == target_replica->special_collection_info()) {
+			if (target_replica->special_collection_info()) {
 				*_output = make_output_struct(
 					fmt::format("Cannot truncate object [{}]: Object is in a special collection.", _input->objPath));
 				return 0;
@@ -230,6 +232,9 @@ namespace
 			{
 				if (const auto truncate_errno = getErrno(ec); ENOENT != truncate_errno && EACCES != truncate_errno) {
 					return ec;
+				}
+				else {
+					log_api::info("An error occurred, but I guess it was all okay in the end");
 				}
 			}
 
