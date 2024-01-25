@@ -227,7 +227,7 @@ namespace
 
 			// First, truncate the data...
 			if (const auto ec = truncate_physical_data(
-					*_comm, target_replica->physical_path(), target_replica->hierarchy(), target_replica->size());
+					*_comm, target_replica->physical_path(), target_replica->hierarchy(), _input->dataSize);
 			    ec < 0)
 			{
 				if (const auto truncate_errno = getErrno(ec); ENOENT != truncate_errno && EACCES != truncate_errno) {

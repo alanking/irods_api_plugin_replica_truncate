@@ -47,7 +47,7 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 
 	// clang-format off
 	desc.add_options()
-		("size,s", po::value<std::size_t>(), "")
+		("size,s", po::value<rodsLong_t>(), "")
 		("resource,R", po::value<std::string>(), "")
 		("replica-number,n", po::value<int>(), "")
 		("admin-mode,M", po::value<bool>()->default_value(false), "")
@@ -71,7 +71,7 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 		}
 
 		DataObjInp input{};
-		auto [cond_input, cond_input_lm] = irods::experimental::make_key_value_proxy();
+		auto cond_input = irods::experimental::make_key_value_proxy(input.condInput);
 
 		if (vm.count("logical_path") == 0) {
 			fmt::print(stderr, "error: Missing LOGICAL_PATH\n");
@@ -82,11 +82,6 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 
 		if (input_logical_path.empty()) {
 			fmt::print(stderr, "error: Missing LOGICAL_PATH\n");
-			return 1;
-		}
-
-		if (vm.count("size") == 0) {
-			fmt::print(stderr, "error: Missing --size\n");
 			return 1;
 		}
 
@@ -105,7 +100,14 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
         	return 1;
     	}
 
-		if (vm["admin-mode"].as<bool>()) {
+		if (vm.count("size") == 0) {
+			fmt::print(stderr, "error: Missing --size\n");
+			return 1;
+		}
+
+		input.dataSize = vm["size"].as<rodsLong_t>();
+
+		if (vm.count("admin-mode") && vm["admin-mode"].as<bool>()) {
 			cond_input[ADMIN_KW] = "";
 		}
 
@@ -114,7 +116,7 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 		}
 
 		if (vm.count("replica-number")) {
-			cond_input[REPL_NUM_KW] = vm["replica-number"].as<std::string>();
+			cond_input[REPL_NUM_KW] = std::to_string(vm["replica-number"].as<int>());
 		}
 
 		irods::experimental::client_connection conn;
