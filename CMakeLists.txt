@@ -51,12 +51,13 @@ if (IRODS_BUILD_WITH_WERROR)
 endif()
 
 set(IRODS_MODULE_NAME_PREFIX "irods_api_plugin_replica_truncate")
+set(CMAKE_IRODS_PLUGIN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_subdirectory(client)
 #add_subdirectory(microservice)
 #add_subdirectory(unit_tests)
 
-#set(IRODS_PACKAGE_NAME irods-api-plugin-replica-truncate)
+set(IRODS_PACKAGE_NAME irods-api-plugin-replica-truncate)
 
 foreach (IRODS_MODULE_VARIANT IN ITEMS client server)
   set(IRODS_MODULE_NAME ${IRODS_MODULE_NAME_PREFIX}_${IRODS_MODULE_VARIANT})

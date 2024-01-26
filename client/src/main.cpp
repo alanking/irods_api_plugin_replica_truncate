@@ -1,4 +1,4 @@
-//#include "irods/plugins/api/replica_truncate_common.h"
+#include "irods/plugins/api/replica_truncate_common.h"
 
 #include <irods/client_connection.hpp>
 #include <irods/irods_at_scope_exit.hpp>
@@ -74,14 +74,14 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 		auto cond_input = irods::experimental::make_key_value_proxy(input.condInput);
 
 		if (vm.count("logical_path") == 0) {
-			fmt::print(stderr, "error: Missing LOGICAL_PATH\n");
+			fmt::print(stderr, "error: Missing LOGICAL_PATH.\n");
 			return 1;
 		}
 
 		auto input_logical_path = vm["logical_path"].as<std::string>();
 
 		if (input_logical_path.empty()) {
-			fmt::print(stderr, "error: Missing LOGICAL_PATH\n");
+			fmt::print(stderr, "error: Missing LOGICAL_PATH.\n");
 			return 1;
 		}
 
@@ -101,7 +101,7 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
     	}
 
 		if (vm.count("size") == 0) {
-			fmt::print(stderr, "error: Missing --size\n");
+			fmt::print(stderr, "error: Missing --size parameter.\n");
 			return 1;
 		}
 
@@ -111,11 +111,19 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 			cond_input[ADMIN_KW] = "";
 		}
 
-		if (vm.count("resource")) {
+		const bool resource_option_used = 0 != vm.count("resource");
+		const bool replica_number_option_used = 0 != vm.count("replica-number");
+
+		if (resource_option_used && replica_number_option_used) {
+			fmt::print(stderr, "error: --resource and --replica-number options are incompatible.\n");
+			return 1;
+		}
+
+		if (resource_option_used) {
 			cond_input[RESC_NAME_KW] = vm["resource"].as<std::string>();
 		}
 
-		if (vm.count("replica-number")) {
+		if (replica_number_option_used) {
 			cond_input[REPL_NUM_KW] = std::to_string(vm["replica-number"].as<int>());
 		}
 
@@ -128,7 +136,7 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 
 		const auto ec =
 			procApiRequest(static_cast<RcComm*>(conn),
-						   1'000'444, //APN_REPLICA_TRUNCATE,
+						   APN_REPLICA_TRUNCATE,
 						   &input,
 						   nullptr,
 						   reinterpret_cast<void**>(&output), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -163,7 +171,6 @@ auto print_usage_info() -> void
 
 Usage: itruncate [OPTIONS]... LOGICAL_PATH
 
-Queries the iRODS Catalog using GenQuery2.
 Truncates a replica of the specified data object at LOGICAL_PATH to the specified size in bytes.
 
 LOGICAL_PATH must refer to an existing, at-rest data object.
@@ -186,6 +193,6 @@ Options:
 		Display this help message and exit.
 )_");
 
-	char name[] = "iquery (experimental)";
+	char name[] = "itruncate";
 	printReleaseInfo(name);
 } // print_usage_info
