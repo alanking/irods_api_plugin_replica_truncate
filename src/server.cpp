@@ -127,7 +127,9 @@ namespace
 			// Get the target_resource and replica_number options. Ensure that they are not being used at the same time
 			// because they are incompatible parameters. They are incompatible parameters because they can contradict
 			// one another as to what the user is instructing the API to do.
-			if (cond_input.contains(RESC_NAME_KW) && cond_input.contains(REPL_NUM_KW)) {
+			const auto resc_name_itr = cond_input.find(RESC_NAME_KW);
+			const auto repl_num_itr = cond_input.find(REPL_NUM_KW);
+			if (resc_name_itr != cond_input.cend() && repl_num_itr != cond_input.cend()) {
 				*_output = make_output_struct(
 					fmt::format("Cannot truncate object [{}]: '{}' and '{}' are incompatible options.",
 				                _input->objPath,
@@ -151,17 +153,13 @@ namespace
 				irods::file_object_factory(_comm, _input, file_obj, &data_obj_info);
 			if (!fac_err.ok() || !data_obj_info) {
 				*_output = make_output_struct(
-					fmt::format("Cannot truncate object [{}]: Error occurred getting data object info.",
-				                _input->objPath));
-				                //fac_err.result()));
+					fmt::format("Cannot truncate object [{}]: Error occurred getting data object info.", _input->objPath));
 				return static_cast<int>(fac_err.code());
 			}
 
 			std::string hierarchy{};
 			if (const auto hier_str = cond_input.find(RESC_HIER_STR_KW); hier_str == cond_input.cend()) {
 				// Don't look too closely at this - may cause eye irritation.
-				//log_api::debug("{}: Resolving hierarchy for [{}]. {}:[{}], {}:[{}]", __func__, _input->objPath,
-				//RESC_HIER_STR_KW, _input->objPath);
 				auto resolve_hierarchy_tuple = std::make_tuple(file_obj, fac_err);
 				std::tie(file_obj, hierarchy) = irods::resolve_resource_hierarchy(
 					_comm, irods::WRITE_OPERATION, *_input, resolve_hierarchy_tuple);
@@ -185,7 +183,6 @@ namespace
 				return SYS_REPLICA_DOES_NOT_EXIST;
 			}
 
-#if 0
 			// This would be handled by voting, so... there's not much to be done.
 			// Check that the object is at rest ahead of time so that we can get a detailed message.
 			if (!target_object.at_rest()) {
@@ -193,19 +190,13 @@ namespace
 					fmt::format("Cannot truncate object [{}]: Object is not at rest.", _input->objPath));
 				return LOCKED_DATA_OBJECT_ACCESS;
 			}
-#endif
 
-			// TODO if requested replica number or resource name is not the target replica, we should bail with an
-			// error.
-
-#if 0
-			// I'm not even really sure whether this situation is possible. Leaving it here just in case.
+			// I'm not even really sure whether this situation is possible... Leaving it here just in case.
 			if (target_replica->resource() == BUNDLE_RESC) {
 				*_output = make_output_struct(fmt::format(
 					"Cannot truncate object [{}]: Replica targeted for truncate resides on [{}]. Skipping.", _input->objPath, BUNDLE_RESC));
 				return 0;
 			}
-#endif
 
 			// The old truncate API skipped updating the catalog when the object is in a special collection, and so
 			// shall we. In fact, we should not touch the object at all in this case because it is unclear what to do.
