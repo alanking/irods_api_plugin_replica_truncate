@@ -182,7 +182,7 @@ namespace
 
 			// This would be handled by voting, so... there's not much to be done.
 			// Check that the object is at rest ahead of time so that we can get a detailed message.
-			if (!target_object.at_rest()) {
+			if (!target_replica->at_rest()) {
 				*_output = make_output_struct(
 					fmt::format("Cannot truncate object [{}]: Object is not at rest.", _input->objPath));
 				return LOCKED_DATA_OBJECT_ACCESS;
@@ -225,9 +225,19 @@ namespace
 				}
 			}
 
-			// TODO Investigate use of CHKSUM_KW here...
+			// clang-format off
 			const auto [register_keywords, register_keywords_lm] = irods::experimental::make_key_value_proxy(
-				{{ALL_REPL_STATUS_KW, ""}, {DATA_SIZE_KW, std::to_string(_input->dataSize)}, {CHKSUM_KW, ""}});
+				{
+					// This updates the statuses of the other replicas to stale.
+					{ALL_REPL_STATUS_KW, ""},
+					// This updates the size of the replica.
+					{DATA_SIZE_KW, std::to_string(_input->dataSize)},
+					// This CLEARS the checksum... hmmm...
+					{CHKSUM_KW, ""},
+					// Include OPEN_TYPE_KW in order to trigger fileModified.
+					{OPEN_TYPE_KW, std::to_string(OPEN_FOR_WRITE_TYPE)}
+				});
+			// clang-format on
 
 			ModDataObjMetaInp inp{target_replica->get(), register_keywords.get()};
 
