@@ -14,7 +14,7 @@ struct DataObjInp;
 struct BytesBuf;
 
 // The function signature of the API plugin.
-using operation_type = std::function<int(RsComm*, const DataObjInp*, BytesBuf**)>;
+using operation_type = std::function<int(RsComm*, DataObjInp*, BytesBuf**)>;
 
 // Defined differently based on whether the client module or server module
 // is being compiled. DO NOT CHANGE THESE DECLARATIONS!

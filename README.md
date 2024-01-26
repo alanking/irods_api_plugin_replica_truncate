@@ -50,7 +50,7 @@ replica_truncate:
 /// \return iRODS error code.
 /// \retval 0 on success
 /// \retval <0 on failure
-int replica_truncate(RcComm* _comm, const DataObjInp* _input, BytesBuf** _output);
+int replica_truncate(RcComm* _comm, DataObjInp* _input, BytesBuf** _output);
 ```
 
 replica_ftruncate:
@@ -97,5 +97,5 @@ replica_ftruncate:
 /// \return iRODS error code.
 /// \retval 0 on success
 /// \retval <0 on failure
-int replica_ftruncate(RcComm* _comm, const DataObjInp* _input, BytesBuf** _output);
+int replica_ftruncate(RcComm* _comm, DataObjInp* _input, BytesBuf** _output);
 ```

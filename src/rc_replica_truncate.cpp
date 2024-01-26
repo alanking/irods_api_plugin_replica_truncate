@@ -5,7 +5,7 @@
 #include <irods/procApiRequest.h>
 #include <irods/rodsErrorTable.h>
 
-auto rc_replica_truncate(RcComm* _comm, const DataObjInp* _input, BytesBuf** _output) -> int
+auto rc_replica_truncate(RcComm* _comm, DataObjInp* _input, BytesBuf** _output) -> int
 {
 	if (!_message || !_response) {
 		return USER__NULL_INPUT_ERR;

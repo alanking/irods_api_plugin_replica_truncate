@@ -5,7 +5,7 @@
 #include <irods/rodsErrorTable.h>
 #include <irods/irods_server_api_call.hpp>
 
-auto rs_replica_truncate(RsComm* _comm, const DataObjInp* _input, BytesBuf** _output) -> int
+auto rs_replica_truncate(RsComm* _comm, DataObjInp* _input, BytesBuf** _output) -> int
 {
 	if (!_message || !_response) {
 		return USER__NULL_INPUT_ERR;

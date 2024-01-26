@@ -47,6 +47,6 @@ struct BytesBuf;
 /// \return iRODS error code.
 /// \retval 0 on success
 /// \retval <0 on failure
-extern "C" int rc_replica_truncate(struct RcComm* _comm, const DataObjInp* _input, BytesBuf** _output);
+extern "C" int rc_replica_truncate(struct RcComm* _comm, DataObjInp* _input, BytesBuf** _output);
 
 #endif // IRODS_RC_REPLICA_TRUNCATE_H

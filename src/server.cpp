@@ -33,10 +33,10 @@ namespace
 	namespace data_object = irods::experimental::data_object;
 	namespace fs = irods::experimental::filesystem;
 
-	auto call_replica_truncate(irods::api_entry* _api, RsComm* _comm, const DataObjInp* _input, BytesBuf** _output)
+	auto call_replica_truncate(irods::api_entry* _api, RsComm* _comm, DataObjInp* _input, BytesBuf** _output)
 		-> int
 	{
-		return _api->call_handler<const DataObjInp*, BytesBuf**>(_comm, _input, _output);
+		return _api->call_handler<DataObjInp*, BytesBuf**>(_comm, _input, _output);
 	} // call_replica_truncate
 
 	auto make_output_struct(const std::string_view& _message) -> BytesBuf*
@@ -71,7 +71,7 @@ namespace
 		return rsFileTruncate(&_comm, &inp);
 	} // truncate_physical_data
 
-	auto rs_replica_truncate(RsComm* _comm, const DataObjInp* _input, BytesBuf** _output) -> int
+	auto rs_replica_truncate(RsComm* _comm, DataObjInp* _input, BytesBuf** _output) -> int
 	{
 		if (!_input || !_output) {
 			*_output = make_output_struct(fmt::format(
@@ -81,12 +81,11 @@ namespace
 
 		try {
 			rodsServerHost_t* remote_host{};
-			// TODO const_cast is super not good -- may need to change interface to not have const
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wwritable-strings"
 			// REMOTE_OPEN is a string literal being passed to a char*.
 			const auto remote_flag =
-				getAndConnRemoteZone(_comm, const_cast<DataObjInp*>(_input), &remote_host, REMOTE_OPEN);
+				getAndConnRemoteZone(_comm, _input, &remote_host, REMOTE_OPEN);
 #pragma clang diagnostic pop
 			if (remote_flag < 0) {
 				*_output = make_output_struct(fmt::format(
@@ -148,9 +147,8 @@ namespace
 			DataObjInfo* data_obj_info{};
 			irods::at_scope_exit free_data_object_info{[&data_obj_info] { freeAllDataObjInfo(data_obj_info); }};
 
-			// TODO const_cast is super not good -- may need to change interface to not have const
 			const auto fac_err =
-				irods::file_object_factory(_comm, const_cast<DataObjInp*>(_input), file_obj, &data_obj_info);
+				irods::file_object_factory(_comm, _input, file_obj, &data_obj_info);
 			if (!fac_err.ok() || !data_obj_info) {
 				*_output = make_output_struct(
 					fmt::format("Cannot truncate object [{}]: Error occurred getting data object info.",
@@ -165,9 +163,8 @@ namespace
 				//log_api::debug("{}: Resolving hierarchy for [{}]. {}:[{}], {}:[{}]", __func__, _input->objPath,
 				//RESC_HIER_STR_KW, _input->objPath);
 				auto resolve_hierarchy_tuple = std::make_tuple(file_obj, fac_err);
-				// TODO const_cast is super not good -- may need to change interface to not have const
 				std::tie(file_obj, hierarchy) = irods::resolve_resource_hierarchy(
-					_comm, irods::WRITE_OPERATION, *(const_cast<DataObjInp*>(_input)), resolve_hierarchy_tuple);
+					_comm, irods::WRITE_OPERATION, *_input, resolve_hierarchy_tuple);
 			}
 			else {
 				// Leave a note in the logs because this is technically bypassing policy despite being an iRODS pattern.
