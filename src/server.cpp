@@ -33,8 +33,7 @@ namespace
 	namespace data_object = irods::experimental::data_object;
 	namespace fs = irods::experimental::filesystem;
 
-	auto call_replica_truncate(irods::api_entry* _api, RsComm* _comm, DataObjInp* _input, BytesBuf** _output)
-		-> int
+	auto call_replica_truncate(irods::api_entry* _api, RsComm* _comm, DataObjInp* _input, BytesBuf** _output) -> int
 	{
 		return _api->call_handler<DataObjInp*, BytesBuf**>(_comm, _input, _output);
 	} // call_replica_truncate
@@ -84,8 +83,7 @@ namespace
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wwritable-strings"
 			// REMOTE_OPEN is a string literal being passed to a char*.
-			const auto remote_flag =
-				getAndConnRemoteZone(_comm, _input, &remote_host, REMOTE_OPEN);
+			const auto remote_flag = getAndConnRemoteZone(_comm, _input, &remote_host, REMOTE_OPEN);
 #pragma clang diagnostic pop
 			if (remote_flag < 0) {
 				*_output = make_output_struct(fmt::format(
@@ -149,11 +147,10 @@ namespace
 			DataObjInfo* data_obj_info{};
 			irods::at_scope_exit free_data_object_info{[&data_obj_info] { freeAllDataObjInfo(data_obj_info); }};
 
-			const auto fac_err =
-				irods::file_object_factory(_comm, _input, file_obj, &data_obj_info);
+			const auto fac_err = irods::file_object_factory(_comm, _input, file_obj, &data_obj_info);
 			if (!fac_err.ok() || !data_obj_info) {
-				*_output = make_output_struct(
-					fmt::format("Cannot truncate object [{}]: Error occurred getting data object info.", _input->objPath));
+				*_output = make_output_struct(fmt::format(
+					"Cannot truncate object [{}]: Error occurred getting data object info.", _input->objPath));
 				return static_cast<int>(fac_err.code());
 			}
 
@@ -161,8 +158,8 @@ namespace
 			if (const auto hier_str = cond_input.find(RESC_HIER_STR_KW); hier_str == cond_input.cend()) {
 				// Don't look too closely at this - may cause eye irritation.
 				auto resolve_hierarchy_tuple = std::make_tuple(file_obj, fac_err);
-				std::tie(file_obj, hierarchy) = irods::resolve_resource_hierarchy(
-					_comm, irods::WRITE_OPERATION, *_input, resolve_hierarchy_tuple);
+				std::tie(file_obj, hierarchy) =
+					irods::resolve_resource_hierarchy(_comm, irods::WRITE_OPERATION, *_input, resolve_hierarchy_tuple);
 			}
 			else {
 				// Leave a note in the logs because this is technically bypassing policy despite being an iRODS pattern.
@@ -193,8 +190,10 @@ namespace
 
 			// I'm not even really sure whether this situation is possible... Leaving it here just in case.
 			if (target_replica->resource() == BUNDLE_RESC) {
-				*_output = make_output_struct(fmt::format(
-					"Cannot truncate object [{}]: Replica targeted for truncate resides on [{}]. Skipping.", _input->objPath, BUNDLE_RESC));
+				*_output = make_output_struct(
+					fmt::format("Cannot truncate object [{}]: Replica targeted for truncate resides on [{}]. Skipping.",
+				                _input->objPath,
+				                BUNDLE_RESC));
 				return 0;
 			}
 

@@ -5,7 +5,7 @@
 #include <irods/irods_exception.hpp>
 #include <irods/key_value_proxy.hpp>
 #include <irods/procApiRequest.h>
-#include <irods/rcMisc.h>	 // For set_ips_display_name()
+#include <irods/rcMisc.h>     // For set_ips_display_name()
 #include <irods/rodsClient.h> // For load_client_api_plugins()
 
 #include <boost/program_options.hpp>
@@ -85,11 +85,11 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 			return 1;
 		}
 
-        rodsEnv env;
-        if (getRodsEnv(&env) < 0) {
-            fmt::print(stderr, "Error: Could not get iRODS environment.\n");
-            return 1;
-        }
+		rodsEnv env;
+		if (getRodsEnv(&env) < 0) {
+			fmt::print(stderr, "Error: Could not get iRODS environment.\n");
+			return 1;
+		}
 
 		if (const auto maybe_logical_path = canonical(input_logical_path, env); maybe_logical_path) {
 			// Minus 1 to allow the last character to be a null character.
@@ -97,8 +97,8 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 		}
 		else {
 			fmt::print(stderr, "error: LOGICAL_PATH could not be made an absolute path.\n");
-        	return 1;
-    	}
+			return 1;
+		}
 
 		if (vm.count("size") == 0) {
 			fmt::print(stderr, "error: Missing --size parameter.\n");
@@ -130,17 +130,15 @@ int main(int _argc, char* _argv[]) // NOLINT(modernize-use-trailing-return-type)
 		irods::experimental::client_connection conn;
 
 		BytesBuf* output{};
-		irods::at_scope_exit free_output{[&output] {
-			clearBytesBuffer(output);
-		}};
+		irods::at_scope_exit free_output{[&output] { clearBytesBuffer(output); }};
 
 		const auto ec =
 			procApiRequest(static_cast<RcComm*>(conn),
-						   APN_REPLICA_TRUNCATE,
-						   &input,
-						   nullptr,
-						   reinterpret_cast<void**>(&output), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-						   nullptr);
+		                   APN_REPLICA_TRUNCATE,
+		                   &input,
+		                   nullptr,
+		                   reinterpret_cast<void**>(&output), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+		                   nullptr);
 
 		if (output && output->len > 0) {
 			const auto* output_str = static_cast<char*>(output->buf);
